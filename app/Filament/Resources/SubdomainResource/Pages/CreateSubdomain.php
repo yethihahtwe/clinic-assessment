@@ -9,4 +9,12 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateSubdomain extends CreateRecord
 {
     protected static string $resource = SubdomainResource::class;
+
+    protected function getRedirectUrl(): string {
+        return $this->getResource()::getUrl('index');
+    }
+
+    protected function getCreatedNotificationTitle():?string{
+        return 'Subdomain successfully created.';
+    }
 }
