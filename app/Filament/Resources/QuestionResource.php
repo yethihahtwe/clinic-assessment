@@ -34,7 +34,11 @@ class QuestionResource extends Resource
         return $form
             ->schema([
                 Select::make('domain_id')
-                    ->relationship(name: 'domain', titleAttribute: 'name')
+                    ->relationship(
+                        name: 'domain',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn(Builder $query) => $query->orderBy('id'),
+                        )
                     ->label(__('Parent Domain'))
                     ->placeholder('Please select domain')
                     ->searchable()
