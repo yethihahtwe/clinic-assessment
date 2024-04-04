@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use App\Models\Question;
 use Filament\Forms\Form;
 use App\Models\Subdomain;
@@ -32,9 +33,21 @@ class QuestionResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('domain_id')->relationship(name: 'domain', titleAttribute: 'name')->label(__('Parent Domain'))->placeholder('Please select domain')->searchable()->preload()->live()->native(false)->required()->columnSpan(2),
+                Select::make('domain_id')
+                    ->relationship(name: 'domain', titleAttribute: 'name')
+                    ->label(__('Parent Domain'))
+                    ->placeholder('Please select domain')
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set) {
+                        $set('subdomain_id', null);
+                    })
+                    ->native(false)
+                    ->required()
+                    ->columnSpan(2),
                 Select::make('subdomain_id')
-                    ->label(__('Parent Subdomain (Leave empty is no subdomain)'))
+                    ->label(__('Parent Subdomain (Leave empty if no subdomain)'))
                     ->placeholder('Select or leave empty')
                     ->options(function (Get $get) {
                         $subdomains = Subdomain::query()->where('domain_id', $get('domain_id'))->pluck('name', 'id');
@@ -49,18 +62,8 @@ class QuestionResource extends Resource
                     ->native(false)
                     ->default(null)
                     ->columnSpan(2),
-                    TextInput::make('number')
-                    ->label(__('Question Number'))
-                    ->helperText('Please enter the question number from the assessment form')
-                    ->required()
-                ->numeric()
-                ->step(1)
-                ->columnSpan(1),
-                TextArea::make('name')
-                    ->label(__('Question'))
-                    ->required()
-                    ->maxLength(255)
-                    ->columnSpanFull(),
+                TextInput::make('number')->label(__('Question Number'))->helperText('Please enter the question number from the assessment form')->required()->numeric()->step(1)->columnSpan(1),
+                TextArea::make('name')->label(__('Question'))->required()->maxLength(255)->columnSpanFull(),
             ])
             ->columns(5);
     }

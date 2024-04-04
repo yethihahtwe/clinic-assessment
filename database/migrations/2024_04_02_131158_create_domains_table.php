@@ -16,6 +16,39 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
         });
+
+        DB::table('domains')->insert([
+            [
+                'name' => 'Infrastructure',
+            ],
+            [
+                'name' => 'Human Resources',
+            ],
+            [
+                'name' => 'General Examination',
+            ],
+            [
+                'name' => 'Infection prevention and control',
+            ],
+            [
+                'name' => 'AIDS, TB, Malaria',
+            ],
+            [
+                'name' => 'Medical Emergency Management',
+            ],
+            [
+                'name' => 'Maternal and Reproductive Health',
+            ],
+            [
+                'name' => 'Child Health',
+            ],
+            [
+                'name' => 'RDQA1: Data collection and reporting tool',
+            ],
+            [
+                'name' => 'RDQA3: Pharmacy supervision checklist',
+            ],
+        ]);
     }
 
     /**

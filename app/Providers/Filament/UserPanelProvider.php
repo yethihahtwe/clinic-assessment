@@ -43,7 +43,7 @@ class UserPanelProvider extends PanelProvider
             ->favicon(asset('images/favicon.ico'))
             ->userMenuItems([MenuItem::make()->label('Admin')->icon('heroicon-m-shield-check')->url('/admin')->visible(fn(): bool => auth()->user()->is_admin)])
             ->defaultThemeMode(ThemeMode::Dark)
-            ->navigationGroups([NavigationGroup::make()->label('Settings')->icon('heroicon-o-adjustments-horizontal')])
+            ->navigationGroups([NavigationGroup::make()->label('Settings')])
             ->discoverResources(in: app_path('Filament/User/Resources'), for: 'App\\Filament\\User\\Resources')
             ->discoverPages(in: app_path('Filament/User/Pages'), for: 'App\\Filament\\User\\Pages')
             ->pages([Pages\Dashboard::class])

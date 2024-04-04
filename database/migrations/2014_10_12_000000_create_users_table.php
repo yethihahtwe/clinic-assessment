@@ -25,6 +25,14 @@ return new class extends Migration {
             $table->string('avatar')->nullable();
             $table->timestamps();
         });
+
+        DB::table('users')->insert([
+            'name' => 'Admin',
+            'email' => 'admin@ehssg.org',
+            'is_admin' => true,
+            'password' => bcrypt('admin'),
+            'organization_id' => 1
+        ]);
     }
 
     /**
