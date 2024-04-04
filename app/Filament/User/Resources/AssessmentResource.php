@@ -10,9 +10,11 @@ use App\Models\Assessment;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Services\AssessmentService;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,7 +35,7 @@ class AssessmentResource extends Resource
                 Select::make('clinic_id')
                     ->relationship(name: 'clinic',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn(Builder $query) => $query->where('user_id', auth()->user()->id))
+                        modifyQueryUsing: fn(Builder $query) => $query->where('organization_id', auth()->user()->organization_id))
                     ->searchable()
                     ->preload()
                     ->native(false)
@@ -51,24 +53,31 @@ class AssessmentResource extends Resource
                     ->displayFormat('d-M-Y')
                     ->icon('heroicon-o-calendar')
                     ->native(false),
-                Section::make('Responses')->schema(AssessmentService::schema()),
-                // Section::make('Responses')->schema([
-                //     Radio::make('choices.d1q1')->label($domains)->boolean()->inline()->inlineLabel(false)
-                //     ])
+                Section::make('Responses')->schema([Tabs::make('Responses')->tabs(AssessmentService::schema())]),
                     ])->columns(2);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+	        ->query(Assessment::query()->where('user_id', auth()->user()->id))
             ->columns([
-                //
+                TextColumn::make('clinic.name')->label('Clinic')->searchable()->sortable(),
+                TextColumn::make('assessor.name')->label('Assessment by')->searchable()->sortable(),
+                TextColumn::make('date')->date('d-M-Y')->sortable(),
             ])
             ->filters([
                 //
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getRelations(): array

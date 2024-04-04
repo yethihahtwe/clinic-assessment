@@ -6,8 +6,8 @@ use App\Models\Domain;
 use App\Models\Question;
 use App\Models\Subdomain;
 use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Tabs\Tab;
 
 class AssessmentService
 {
@@ -29,21 +29,27 @@ class AssessmentService
 
                     $questions = Question::where('subdomain_id', $subdomain->id)->get();
                     $questionComponents = [];
+                    $i = 1;
                     foreach($questions as $question){
                         $questionLabel = $question->name;
-                        $questionComponents[] = Radio::make('choices')->label($questionLabel)->boolean()->inline()->inlineLabel(false);
+                        $questionSlug = $question->slug;
+                        $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i .'. '. $questionLabel)->boolean()->inline()->inlineLabel(false)->required();
+                        $i++;
                     }
-                    $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents);
+                    $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents)->columns(1);
                 }
-                $domainComponents[] = Section::make($domainLabel)->schema($subdomainComponents);
+                $domainComponents[] = Tab::make($domainLabel)->schema($subdomainComponents);
             } else {
                 $questions = Question::where('domain_id', $domain->id)->get();
                 $questionComponents = [];
+                $i = 1;
                 foreach($questions as $question){
                     $questionLabel = $question->name;
-                    $questionComponents[] = Radio::make('choices')->label($questionLabel)->boolean()->inline()->inlineLabel(false);
+                    $questionSlug = $question->slug;
+                    $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i . '. '. $questionLabel)->boolean()->inline()->inlineLabel(false)->required();
+                    $i++;
                 }
-                $domainComponents[] = Section::make($domainLabel)->schema($questionComponents);
+                $domainComponents[] = Tab::make($domainLabel)->schema($questionComponents)->columns(1);
             }
         }
         return $domainComponents;
