@@ -9,6 +9,7 @@ use Filament\PanelProvider;
 use Filament\Enums\ThemeMode;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
+use App\Filament\Pages\Auth\EditProfile;
 use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
@@ -30,7 +31,7 @@ class UserPanelProvider extends PanelProvider
             ->path('/')
             ->login()
             ->passwordReset()
-            ->profile()
+            ->profile(EditProfile::class)
             ->colors([
                 'primary' => Color::Emerald,
                 'success' => Color::Emerald,

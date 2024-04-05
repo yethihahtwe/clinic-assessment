@@ -7,13 +7,14 @@ use App\Models\Assessor;
 use App\Models\Assessment;
 use App\Models\Organization;
 use Laravel\Sanctum\HasApiTokens;
+use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasAvatar
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -50,5 +51,10 @@ class User extends Authenticatable
     }
     public function assessors(): HasMany {
         return $this->hasMany(Assessor::class);
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return asset('storage/'. $this->avatar);
     }
 }
