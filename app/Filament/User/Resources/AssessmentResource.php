@@ -60,7 +60,7 @@ class AssessmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-	        ->query(Assessment::query()->where('user_id', auth()->user()->id))
+	        ->query(Assessment::query()->where('organization_id', auth()->user()->organization_id))
             ->columns([
                 TextColumn::make('clinic.name')->label('Clinic')->searchable()->sortable(),
                 TextColumn::make('assessor.name')->label('Assessment by')->searchable()->sortable(),

@@ -13,6 +13,7 @@ class CreateAssessment extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = auth()->user()->id;
+        $data['organization_id'] = auth()->user()->organization_id;
         return $data;
     }
 

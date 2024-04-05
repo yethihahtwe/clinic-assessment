@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\Clinic;
 use App\Models\Assessor;
+use App\Models\Organization;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +16,7 @@ class Assessment extends Model
 
     protected $fillable = [
         'user_id',
+        'organization_id',
         'clinic_id',
         'assessor_id',
         'date',
@@ -30,5 +32,8 @@ class Assessment extends Model
     }
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
+    }
+    public function organization(): BelongsTo {
+        return $this->belongsTo(Organization::class);
     }
 }

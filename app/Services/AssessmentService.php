@@ -33,7 +33,7 @@ class AssessmentService
                     foreach($questions as $question){
                         $questionLabel = $question->name;
                         $questionSlug = $question->slug;
-                        $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i .'. '. $questionLabel)->boolean()->inline()->inlineLabel(false)->required();
+                        $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i .'. '. $questionLabel)->boolean()->inline()->inlineLabel(false);
                         $i++;
                     }
                     $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents)->columns(1);
@@ -46,7 +46,7 @@ class AssessmentService
                 foreach($questions as $question){
                     $questionLabel = $question->name;
                     $questionSlug = $question->slug;
-                    $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i . '. '. $questionLabel)->boolean()->inline()->inlineLabel(false)->required();
+                    $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i . '. '. $questionLabel)->boolean()->inline()->inlineLabel(false);
                     $i++;
                 }
                 $domainComponents[] = Tab::make($domainLabel)->schema($questionComponents)->columns(1);

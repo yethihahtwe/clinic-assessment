@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
             $table->foreignId('clinic_id')->constrained('clinics')->cascadeOnDelete();
             $table->foreignId('assessor_id')->constrained('assessors')->cascadeOnDelete();
             $table->date('date');
