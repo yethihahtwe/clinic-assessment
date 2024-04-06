@@ -5,9 +5,11 @@ namespace App\Filament\User\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Domain;
+use App\Models\Question;
 use Filament\Forms\Form;
 use App\Models\Assessment;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use App\Services\AssessmentService;
 use Filament\Forms\Components\Tabs;
@@ -18,13 +20,19 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Infolists\Components\KeyValueEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\User\Resources\AssessmentResource\Pages;
+use Filament\Infolists\Components\Section as InfolistSection;
 use App\Filament\User\Resources\AssessmentResource\RelationManagers;
 
 class AssessmentResource extends Resource
 {
     protected static ?string $model = Assessment::class;
+
+    public ?string $questions = Question::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
@@ -77,6 +85,22 @@ class AssessmentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+
+
+    public static function infolist(Infolist $infolist):Infolist {
+        return $infolist
+            ->schema([
+                InfolistSection::make()
+                    ->schema([
+                        TextEntry::make('clinic.name')->label('Clinic'),
+                        TextEntry::make('assessor.name')->label('Assessment made by'),
+                        TextEntry::make('date')->date('d-M-Y'),
+                        ViewEntry::make('responses')
+						    ->view('filament.infolists.entries.question-choices')
+                    ])
             ]);
     }
 
