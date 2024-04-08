@@ -14,16 +14,21 @@ use Filament\Resources\Resource;
 use App\Services\AssessmentService;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Radio;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Actions;
+use App\Services\AssessmentInfolistService;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Components\Tabs as InfolistTabs;
 use App\Filament\User\Resources\AssessmentResource\Pages;
 use Filament\Infolists\Components\Section as InfolistSection;
 use App\Filament\User\Resources\AssessmentResource\RelationManagers;
@@ -78,7 +83,7 @@ class AssessmentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -95,11 +100,20 @@ class AssessmentResource extends Resource
             ->schema([
                 InfolistSection::make()
                     ->schema([
+                        // Action::make('export')->url(fn (): string => route('assessments.export', ['id' => $this->id])),
+                        Actions::make([
+                            Action::make('export')
+                                ->url(function (Assessment $record): string
+                                {
+                                    return route('assessments.export', ['id' => $record->id]);
+                                })
+                                ->label('Download Excel')
+                                ->icon('heroicon-o-arrow-down-tray'),
+                        ]),
                         TextEntry::make('clinic.name')->label('Clinic'),
                         TextEntry::make('assessor.name')->label('Assessment made by'),
                         TextEntry::make('date')->date('d-M-Y'),
-                        ViewEntry::make('responses')
-						    ->view('filament.infolists.entries.question-choices')
+                        InfolistTabs::make('responses')->tabs(AssessmentInfolistService::schema())->contained(false),
                     ])
             ]);
     }
