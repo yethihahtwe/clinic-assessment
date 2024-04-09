@@ -100,7 +100,6 @@ class AssessmentResource extends Resource
             ->schema([
                 InfolistSection::make()
                     ->schema([
-                        // Action::make('export')->url(fn (): string => route('assessments.export', ['id' => $this->id])),
                         Actions::make([
                             Action::make('export')
                                 ->url(function (Assessment $record): string
