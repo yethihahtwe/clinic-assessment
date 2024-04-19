@@ -9,8 +9,11 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Actions\Exports\Enums\ExportFormat;
+use App\Filament\Exports\OrganizationScoreExporter;
 
 class AssessmentScores extends BaseWidget
 {
@@ -25,13 +28,22 @@ class AssessmentScores extends BaseWidget
         foreach ($domains as $domain) {
             $domainId = $domain->id;
             $domainName = str_replace(' ','<br />', $domain->name);
-            // $domainName = strtolower(str_replace([' ', ':', ','], ['_', '', ''], $domain->name));
             $columns[] = TextColumn::make($domainId)->label(new HtmlString($domainName));
         }
         return $table
             ->query($this->getTableQuery())
             ->columns($columns)
-            ->defaultSort('date', 'desc');
+            ->defaultSort('date', 'desc')
+            ->headerActions([
+                ExportAction::make()
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->label('Download Excel')
+                    ->exporter(OrganizationScoreExporter::class)
+                    ->columnMapping(false)
+                    ->formats([
+                        ExportFormat::Xlsx,
+                    ])
+            ]);
     }
 
     protected int|string|array $columnSpan = 'full';
@@ -52,7 +64,7 @@ class AssessmentScores extends BaseWidget
                 $totalScore .= " + IFNULL(CAST(JSON_EXTRACT(choices, '$.$slug') AS SIGNED), 0)";
             }
 
-            $query[] = DB::raw("CONCAT($totalScore, ' (', ROUND(($totalScore / $totalPossibleScore) * 100), '%)') AS '$domainId'");
+            $query[] = DB::raw("CONCAT($totalScore, ' (', ROUND((($totalScore) / $totalPossibleScore) * 100), '%)') AS '$domainId'");
         }
 
         return Assessment::select($query)

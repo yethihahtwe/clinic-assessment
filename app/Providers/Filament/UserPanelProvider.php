@@ -33,6 +33,8 @@ class UserPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->profile(EditProfile::class)
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('5s')
             ->colors([
                 'primary' => Color::Emerald,
                 'success' => Color::Emerald,
