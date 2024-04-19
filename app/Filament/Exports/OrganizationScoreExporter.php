@@ -2,9 +2,10 @@
 
 namespace App\Filament\Exports;
 
+use App\Models\Domain;
 use App\Models\OrganizationScore;
-use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
+use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Models\Export;
 
 class OrganizationScoreExporter extends Exporter
@@ -13,9 +14,19 @@ class OrganizationScoreExporter extends Exporter
 
     public static function getColumns(): array
     {
-        return [
-            ExportColumn::make('date'),
-        ];
+            $domains = Domain::all();
+            $columns = [
+                ExportColumn::make('date'),
+                ExportColumn::make('clinic.name')->label('Clinic'),
+            ];
+
+            foreach($domains as $domain)
+            {
+                $domainId = $domain->id;
+                $domainName = $domain->name;
+                $columns[] = ExportColumn::make($domainId)->label($domainName);
+            }
+        return $columns;
     }
 
     public static function getCompletedNotificationBody(Export $export): string

@@ -38,7 +38,9 @@ class AssessmentScores extends BaseWidget
                 ExportAction::make()
                     ->icon('heroicon-o-arrow-down-tray')
                     ->label('Download Excel')
+                    ->color('primary')
                     ->exporter(OrganizationScoreExporter::class)
+                    ->fileName(fn() :string => auth()->user()->organization->abbr . '-' . date('d-M-Y') . '-export')
                     ->columnMapping(false)
                     ->formats([
                         ExportFormat::Xlsx,
