@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('password');
             $table->rememberToken();
             $table->boolean('is_admin')->default(false);
-            $table->foreignId('organization_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('organization_id')->nullable()->constrained('organizations')->cascadeOnDelete();
             $table->string('position')->nullable();
             $table->string('country_code')->nullable();
             $table->string('phone')->nullable();
