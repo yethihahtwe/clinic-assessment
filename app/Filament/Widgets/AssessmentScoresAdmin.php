@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\User\Widgets;
+namespace App\Filament\Widgets;
 
 use Filament\Tables;
 use App\Models\Domain;
@@ -10,51 +10,47 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Exports\ScoreAdminExporter;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Filament\Actions\Exports\Enums\ExportFormat;
-use App\Filament\Exports\OrganizationScoreExporter;
 
-class AssessmentScores extends BaseWidget
+class AssessmentScoresAdmin extends BaseWidget
 {
     public function table(Table $table): Table
     {
         $domains = Domain::all();
-        $columns = [
-            TextColumn::make('date')->date('d-M-Y')->sortable(),
-            TextColumn::make('clinic.name')->label('Clinic')->searchable()->sortable()
-        ];
+        $columns = [TextColumn::make('date')->date('d-M-Y')->sortable(), TextColumn::make('clinic.name')->label('Clinic')->searchable()->sortable(), TextColumn::make('organization.abbr')->label('Organization')->searchable()->sortable()];
 
         foreach ($domains as $domain) {
             $domainId = $domain->id;
-            $domainName = str_replace(' ','<br />', $domain->name);
+            $domainName = str_replace(' ', '<br />', $domain->name);
             $columns[] = TextColumn::make($domainId)->label(new HtmlString($domainName));
         }
         return $table
             ->query($this->getTableQuery())
             ->columns($columns)
             ->defaultSort('date', 'desc')
+            ->filters([SelectFilter::make('organization')->relationship('organization', 'abbr')->searchable()->preload()->native(false),])
             ->headerActions([
                 ExportAction::make()
                     ->icon('heroicon-o-arrow-down-tray')
                     ->label('Download Excel')
                     ->color('primary')
-                    ->exporter(OrganizationScoreExporter::class)
-                    ->fileName(fn() :string => auth()->user()->organization->abbr . '-' . date('d-M-Y') . '-export')
+                    ->exporter(ScoreAdminExporter::class)
+                    ->fileName(fn() :string => date('d-M-Y') . '-admin-export')
                     ->columnMapping(false)
-                    ->formats([
-                        ExportFormat::Xlsx,
-                    ])
+                    ->formats([ExportFormat::Xlsx])
             ]);
     }
 
     protected int|string|array $columnSpan = 'full';
-
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 6;
 
     protected function getTableQuery(): Builder
     {
-        $query = ['id', 'date', 'clinic_id'];
+        $query = ['id', 'date', 'clinic_id', 'organization_id'];
 
         $domains = Domain::all();
         foreach ($domains as $domain) {
@@ -71,7 +67,6 @@ class AssessmentScores extends BaseWidget
             $query[] = DB::raw("CONCAT($totalScore, ' (', ROUND((($totalScore) / $totalPossibleScore) * 100), '%)') AS '$domainId'");
         }
 
-        return Assessment::select($query)
-            ->where('organization_id', auth()->user()->organization_id);
+        return Assessment::select($query);
     }
 }
