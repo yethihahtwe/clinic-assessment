@@ -21,10 +21,9 @@ class AssessmentFactory extends Factory
      */
     public function definition(): array
     {
-        $organizationId = fake()->randomElement(Organization::pluck('id'));
-        $userId = fake()->randomElement(User::where('organization_id', $organizationId)->pluck('id'));
-        $clinicId = fake()->randomElement(Clinic::where('organization_id', $organizationId)->pluck('id'));
-        $assessorId = fake()->randomElement(Assessor::where('organization_id', $organizationId)->pluck('id'));
+        $user = User::query()->inRandomOrder()->first();
+        $clinic = Clinic::where('organization_id', $user->organization_id)->inRandomOrder()->first();
+        $assessor = Assessor::where('organization_id', $user->organization_id)->inRandomOrder()->first();
 
         $choices = [];
         $slugs = Question::pluck('slug');
@@ -33,10 +32,10 @@ class AssessmentFactory extends Factory
             $choices[$slug] = fake()->boolean() ? 1 : 0;
         }
         return [
-            'user_id' => $userId,
-            'clinic_id' => $clinicId,
-            'organization_id' => $organizationId,
-            'assessor_id' => $assessorId,
+            'user_id' => $user->id,
+            'clinic_id' => $clinic->id,
+            'organization_id' => $user->organization_id,
+            'assessor_id' => $assessor->id,
             'date' => fake()->date(),
             'choices' => $choices,
         ];

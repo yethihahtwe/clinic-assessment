@@ -15,7 +15,7 @@ class AssessorSeeder extends Seeder
      public function run(): void
      {
            Assessor::factory()
-               ->count(20)
+               ->count(50)
                ->create();
      }
 }

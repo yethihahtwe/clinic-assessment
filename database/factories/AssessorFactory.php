@@ -18,13 +18,12 @@ class AssessorFactory extends Factory
      */
     public function definition(): array
     {
-        $organizationId = fake()->randomElement(Organization::pluck('id'));
-        $userId = fake()->randomElement(User::where('organization_id', $organizationId)->pluck('id'));
+        $user = User::query()->inRandomOrder()->first();
         return [
             'name' => fake()->name(),
             'position' => fake()->jobTitle(),
-            'user_id' => $userId,
-            'organization_id' => $organizationId,
+            'user_id' => $user->id,
+            'organization_id' => $user->organization_id,
         ];
     }
 }
