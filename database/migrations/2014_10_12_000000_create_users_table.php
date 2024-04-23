@@ -27,11 +27,20 @@ return new class extends Migration {
         });
 
         DB::table('users')->insert([
-            'name' => 'Admin',
-            'email' => 'admin@ehssg.org',
-            'is_admin' => true,
-            'password' => bcrypt('admin'),
-            'organization_id' => 1
+            [
+                'name' => 'Admin',
+                'email' => 'admin@ehssg.org',
+                'is_admin' => true,
+                'password' => bcrypt('admin'),
+                'organization_id' => 1
+            ],
+            [
+                'name' => 'User',
+                'email' => 'user@ehssg.org',
+                'is_admin' => false,
+                'password' => bcrypt('password'),
+                'organization_id' => 1
+            ]
         ]);
     }
 
