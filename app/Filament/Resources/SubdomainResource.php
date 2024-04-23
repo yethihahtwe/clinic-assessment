@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use App\Models\Subdomain;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -65,9 +66,9 @@ class SubdomainResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -85,5 +86,17 @@ class SubdomainResource extends Resource
             'create' => Pages\CreateSubdomain::route('/create'),
             'edit' => Pages\EditSubdomain::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (Auth::user()->email === 'admin@ehssg.org')
+        {
+	        return true;
+        }
+        else
+        {
+	        return false;
+        }
     }
 }

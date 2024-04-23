@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\QuestionResource\Pages;
 
-use App\Filament\Resources\QuestionResource;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\QuestionResource;
 
 class EditQuestion extends EditRecord
 {
@@ -12,9 +13,7 @@ class EditQuestion extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\DeleteAction::make(),
-        ];
+        return Auth::user()->email === 'admin@ehssg.org' ? [Actions\DeleteAction::make(),] : [];
     }
 
     protected function mutateFormDataBeforeSave(array $data): array {

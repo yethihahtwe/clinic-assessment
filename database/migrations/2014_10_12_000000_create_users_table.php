@@ -35,10 +35,10 @@ return new class extends Migration {
                 'organization_id' => 1
             ],
             [
-                'name' => 'User',
-                'email' => 'user@ehssg.org',
-                'is_admin' => false,
-                'password' => bcrypt('password'),
+                'name' => 'QI',
+                'email' => 'qi@ehssg.org',
+                'is_admin' => true,
+                'password' => bcrypt('qi@ehssg.org12345!@#$%'),
                 'organization_id' => 1
             ]
         ]);

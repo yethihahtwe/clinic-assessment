@@ -8,6 +8,7 @@ use App\Models\Domain;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,9 +49,9 @@ class DomainResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -68,5 +69,17 @@ class DomainResource extends Resource
             'create' => Pages\CreateDomain::route('/create'),
             'edit' => Pages\EditDomain::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (Auth::user()->email === 'admin@ehssg.org')
+        {
+	        return true;
+        }
+        else
+        {
+	        return false;
+        }
     }
 }

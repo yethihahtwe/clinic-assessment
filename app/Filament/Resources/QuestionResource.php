@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use App\Models\Subdomain;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
@@ -66,7 +67,7 @@ class QuestionResource extends Resource
                     ->native(false)
                     ->default(null)
                     ->columnSpan(2),
-                TextInput::make('number')->label(__('Question Number'))->helperText('Please enter the question number from the assessment form')->required()->numeric()->step(1)->columnSpan(1),
+                TextInput::make('number')->label(__('Question Number'))->helperText('Please enter the question number from the assessment form')->required()->numeric()->step(1)->columnSpan(1)->visible(fn(string $context): bool => $context === 'create'),
                 TextArea::make('name')->label(__('Question'))->required()->maxLength(255)->columnSpanFull(),
             ])
             ->columns(5);
@@ -78,7 +79,9 @@ class QuestionResource extends Resource
             ->columns([TextColumn::make('domain.name')->label('Domain')->searchable()->sortable(), TextColumn::make('subdomain.name')->label('Subdomain')->default('No parent subdomain')->searchable()->sortable(), TextColumn::make('name')->label('Question')->searchable()->sortable()->wrap()])
             ->filters([SelectFilter::make('domain')->relationship('domain', 'name')->searchable()->preload()->native(false)])
             ->actions([Tables\Actions\ViewAction::make(), Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+            ->bulkActions([
+                // Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])
+            ]);
     }
 
     public static function getRelations(): array
@@ -95,5 +98,17 @@ class QuestionResource extends Resource
             'create' => Pages\CreateQuestion::route('/create'),
             'edit' => Pages\EditQuestion::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (Auth::user()->email === 'admin@ehssg.org')
+        {
+	        return true;
+        }
+        else
+        {
+	        return false;
+        }
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\DomainResource\Pages;
 
-use App\Filament\Resources\DomainResource;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\DomainResource;
 
 class EditDomain extends EditRecord
 {
@@ -12,9 +13,7 @@ class EditDomain extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\DeleteAction::make(),
-        ];
+        return Auth::user()->email === 'admin@ehssg.org' ? [Actions\DeleteAction::make(),] : [];
     }
 
     protected function getRedirectUrl(): string {

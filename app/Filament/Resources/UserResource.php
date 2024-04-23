@@ -15,7 +15,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Password;
@@ -35,13 +37,16 @@ class UserResource extends Resource
     {
         return $form->schema([
             Section::make('User Name and Email')
-                ->schema([TextInput::make('name')->label('Username')->placeholder('Please enter Username')->required()->maxLength(255)->columnSpan(1), TextInput::make('email')->placeholder('Please enter email')->required()->email()->maxLength(255)->unique(ignoreRecord: true)->columnSpan(1), Select::make('organization_id')->relationship(name: 'organization', modifyQueryUsing: fn(Builder $query) => $query->orderBy('name')->orderBy('abbr'))->getOptionLabelFromRecordUsing(fn(Organization $record) => "{$record->name} ({$record->abbr})")->placeholder('Please select organization')->searchable()->preload()->live()->native(false)->required()->columnSpan(2)])
+                ->schema([TextInput::make('name')
+                    ->label('Username')->placeholder('Please enter Username')->required()->maxLength(255)->columnSpan(1), TextInput::make('email')->placeholder('Please enter email')->required()->email()->maxLength(255)->unique(ignoreRecord: true)->columnSpan(1), Select::make('organization_id')->relationship(name: 'organization', modifyQueryUsing: fn(Builder $query) => $query->orderBy('name')->orderBy('abbr'))->getOptionLabelFromRecordUsing(fn(Organization $record) => "{$record->name} ({$record->abbr})")->placeholder('Please select organization')->searchable()->preload()->live()->native(false)->required()->columnSpan(2)])
                 ->columns(4),
             Section::make('Password')
                 ->schema([TextInput::make('password')->placeholder('Please enter password')->confirmed()->helperText('Please enter a password of at least 8 characters')->password()->revealable()->required(fn($livewire) => $livewire instanceof CreateUser)->maxLength(255)->rule(Password::default())->dehydrated(fn($state) => filled($state))->dehydrateStateUsing(fn($state) => Hash::make($state)), TextInput::make('password_confirmation')->label(__('Confirm password'))->placeholder('Please confirm password')->password()->dehydrated(false)->revealable()->required(fn($livewire) => $livewire instanceof CreateUser)])
                 ->columns(2),
             Section::make('Admin')
-                ->schema([Toggle::make('is_admin')->label(__('Make this user an admin.')),]),
+                ->schema([Toggle::make('is_admin')
+                    ->disabled(auth()->user()->email !== 'admin@ehssg.org')
+                    ->label(__('Make this user an admin.')),]),
             Section::make('Profile Information')
                 ->schema([
                     TextInput::make('position')->placeholder('Please enter position')->required(fn(string $context): bool => $context === 'edit')->maxLength(255)->columnSpan(3),
@@ -68,7 +73,12 @@ class UserResource extends Resource
                 ])
                 ->columns(6)
                 ->hidden(fn($livewire) => $livewire instanceof CreateUser),
-        ]);
+        ])->disabled(function(?Model $record):bool {
+            if ($record && $record->email === 'admin@ehssg.org'){
+                return true;
+            }
+            return false;
+        });
     }
 
     public static function table(Table $table): Table
@@ -93,13 +103,18 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->disabled(fn(?Model $record):bool => $record->email === 'admin@ehssg.org')
+                    ->hidden(fn(?Model $record):bool => $record->email === 'admin@ehssg.org'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->checkIfRecordIsSelectableUsing(
+                fn (?Model $record): bool => $record->email !== 'admin@ehssg.org',
+            );
     }
 
     public static function getRelations(): array
