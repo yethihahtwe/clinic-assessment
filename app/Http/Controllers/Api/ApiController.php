@@ -1,31 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class BaseController extends Controller
+class ApiController extends Controller
 {
     public function sendResponse($result, $message)
     {
         $response = [
             'success' => true,
-            'data' => $result,
+            'info' => $result,
             'message' => $message,
         ];
         return response()->json($response, 200);
     }
 
-    public function sendError($error, $errorMessage = [], $code)
+    public function sendError($error, $errorDescription, $status)
     {
         $response = [
             'success' => false,
+            'info' => $errorDescription ?? 'An error has occured.',
             'message' => $error,
         ];
-        if (!empty($errorMessage)) {
-            $response['data'] = $errorMessage;
-        }
-        return response()->json($response, $code);
+        return response()->json($response, $status);
     }
 }
