@@ -55,7 +55,7 @@ class AssessmentResource extends Resource
                     ->required(),
                 Select::make('assessor_id')
                     ->label('Assessment made by')
-                    ->relationship(name: 'assessor', titleAttribute: 'name', modifyQueryUsing: fn(Builder $query) => $query->where('user_id', auth()->user()->id))
+                    ->relationship(name: 'assessor', titleAttribute: 'name', modifyQueryUsing: fn(Builder $query) => $query->where('organization_id', auth()->user()->organization_id))
                     ->searchable()
                     ->preload()
                     ->native(false)
