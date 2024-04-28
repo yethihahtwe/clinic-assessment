@@ -20,8 +20,9 @@ class LoginController extends ApiController
             $result['user_id'] = $user->id;
             $result['name'] = $user->name;
             $result['organization'] = $user->organization->name;
-            $result['position'] = $user->position;
-            $result['avatar'] = '/storage/' . $user->avatar;
+            $result['organization_id'] = $user->organization_id;
+            $result['position'] = $user->position ?? '';
+            $result['avatar'] = $user->avatar ?? '/storage/' . $user->avatar;
 
             return $this->sendResponse($result, 'Logged in successfully.');
         }
