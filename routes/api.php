@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\SubdomainController;
 use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\AssessorController;
+use App\Http\Controllers\Api\AssessmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('{id}/clinics', [ClinicController::class, 'index']);
 
     Route::get('{id}/assessors', [AssessorController::class, 'index']);
+
+    Route::get('{id}/assessments', [AssessmentController::class, 'index']);
+    Route::post('assessments', [AssessmentController::class, 'store']);
+    Route::put('assessments/{id}', [AssessmentController::class, 'update']);
+    Route::delete('/assessments/{id}', [AssessmentController::class, 'destroy']);
+
     Route::get('domains', [DomainController::class, 'index']);
     Route::get('subdomains', [SubdomainController::class, 'index']);
     Route::get('questions', [QuestionController::class, 'index']);
