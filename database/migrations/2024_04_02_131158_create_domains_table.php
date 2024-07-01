@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -46,7 +47,7 @@ return new class extends Migration
                 'name' => 'RDQA1: Data collection and reporting tool',
             ],
             [
-                'name' => 'RDQA3: Pharmacy supervision checklist',
+                'name' => 'RDQA2: Pharmacy supervision checklist',
             ],
         ]);
     }

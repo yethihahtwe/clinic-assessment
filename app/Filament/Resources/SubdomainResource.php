@@ -51,10 +51,11 @@ class SubdomainResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')->label('No.'),
                 TextColumn::make('name')
 	                ->label('Subdomain')
 	                ->searchable()->sortable(),
-                TextColumn::make('domain.name')
+                TextColumn::make('domain_id')
 	                ->label('Domain')
 	                ->searchable()->sortable(),
             ])

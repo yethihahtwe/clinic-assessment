@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\QuestionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\QuestionResource\RelationManagers;
+use App\Services\TableComponents\TableColumns;
 
 class QuestionResource extends Resource
 {
@@ -76,8 +77,8 @@ class QuestionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([TextColumn::make('domain.name')->label('Domain')->searchable()->sortable(), TextColumn::make('subdomain.name')->label('Subdomain')->default('No parent subdomain')->searchable()->sortable(), TextColumn::make('name')->label('Question')->searchable()->sortable()->wrap()])
-            ->filters([SelectFilter::make('domain')->relationship('domain', 'name')->searchable()->preload()->native(false)])
+            ->columns(TableColumns::questionColumns())
+            // ->filters([SelectFilter::make('domain')->relationship('domain', 'name')->searchable()->preload()->native(false)])
             ->actions([Tables\Actions\ViewAction::make(), Tables\Actions\EditAction::make()])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])

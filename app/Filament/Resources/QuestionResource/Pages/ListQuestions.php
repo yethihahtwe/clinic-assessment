@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\QuestionResource\Pages;
 
-use App\Filament\Resources\QuestionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\QuestionResource;
+use App\Services\TableComponents\TableTabs;
 
 class ListQuestions extends ListRecords
 {
@@ -16,4 +17,9 @@ class ListQuestions extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public function getTabs(): array
+    {
+        return TableTabs::questionTabs();
+}
 }

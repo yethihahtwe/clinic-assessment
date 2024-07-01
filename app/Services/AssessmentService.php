@@ -36,7 +36,7 @@ class AssessmentService
                         $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i .'. '. $questionLabel)->boolean()->inline()->inlineLabel(false);
                         $i++;
                     }
-                    $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents)->columns(1);
+                    $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents)->columns(2);
                 }
                 $domainComponents[] = Tab::make($domainLabel)->schema($subdomainComponents);
             } else {
@@ -49,7 +49,7 @@ class AssessmentService
                     $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i . '. '. $questionLabel)->boolean()->inline()->inlineLabel(false);
                     $i++;
                 }
-                $domainComponents[] = Tab::make($domainLabel)->schema($questionComponents)->columns(1);
+                $domainComponents[] = Tab::make($domainLabel)->schema($questionComponents)->columns(2);
             }
         }
         return $domainComponents;
