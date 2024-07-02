@@ -8,16 +8,29 @@ use Filament\Tables\Contracts\HasTable;
 
 class TableColumns
 {
-    protected static function rowNumberColumn() {
+    protected static function rowNumberColumn()
+    {
         return TextColumn::make('index')
-        ->label('No.')
-        ->state(
-            static function (HasTable $livewire, stdClass $rowLoop): string {
-                return (string) (
-                    $rowLoop->iteration +
-                    ($livewire->getTableRecordsPerPage() * ($livewire->getTablePage() - 1)));
-            }
-        );
+            ->label('No.')
+            ->rowIndex();
+    }
+
+    public static function domainColumns(): array
+    {
+        return [
+            self::rowNumberColumn(),
+            TextColumn::make('name')->label('Domain')->searchable()->sortable(),
+        ];
+    }
+
+    public static function subdomainColumns(): array
+    {
+        return [
+            self::rowNumberColumn(),
+            TextColumn::make('name')
+                ->label('Subdomain')
+                ->searchable()->sortable(),
+        ];
     }
 
     public static function questionColumns(): array

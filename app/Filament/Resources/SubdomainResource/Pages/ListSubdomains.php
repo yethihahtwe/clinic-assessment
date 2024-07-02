@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SubdomainResource\Pages;
 use App\Filament\Resources\SubdomainResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Services\TableComponents\TableTabs;
 
 class ListSubdomains extends ListRecords
 {
@@ -15,5 +16,10 @@ class ListSubdomains extends ListRecords
         return [
             Actions\CreateAction::make(),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return TableTabs::domainTabs();
     }
 }

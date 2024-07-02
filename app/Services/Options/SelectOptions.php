@@ -70,4 +70,22 @@ class SelectOptions
         'neonatal_mortality' => 'မွေးကင်းစကလေးသေဆုံးမှုဖြစ်စေသော အကြောင်းရင်း ၃ ခုမှာ sepsis and pneumonia, prematurity, birth asphyxia တို့ဖြစ်ပါသည်',
         'u5_mortality' => '၅ နှစ်အောက်ကလေးသေဆုံးမှုဖြစ်စေသော အကြောင်းရင်း ၂ ခုမှာ pneumonia, diarrhoea ဖြစ်ပါသည်',
     ];
+
+    public static array $bf24hr = [
+        '8t' => '8 times (or) 3 hourly',
+        '2t' => '2 times (or) 12 hourly',
+        '6t' => '6 times (or) 4 hourly',
+    ];
+
+    public static array $exclusiveBf = [
+        '3m' => 'Full 3 months',
+        '6m' => 'Full 6 months',
+        '9m' => 'Full 9 months',
+    ];
+
+    public static array $supplementaryNutrition = [
+        'water' => 'Can give water',
+        'food' => 'Can give food',
+        'nil' => 'No food even water should be given to infants before 6 months of age except breast feeding (Can give ORS or medication if necessary)',
+    ];
 }

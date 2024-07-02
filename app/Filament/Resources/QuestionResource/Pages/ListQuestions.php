@@ -20,6 +20,6 @@ class ListQuestions extends ListRecords
 
     public function getTabs(): array
     {
-        return TableTabs::questionTabs();
-}
+        return TableTabs::domainTabs();
+    }
 }

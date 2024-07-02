@@ -32,6 +32,7 @@ use Filament\Infolists\Components\Tabs as InfolistTabs;
 use App\Filament\User\Resources\AssessmentResource\Pages;
 use Filament\Infolists\Components\Section as InfolistSection;
 use App\Filament\User\Resources\AssessmentResource\RelationManagers;
+use App\Services\FormComponents\FormFields;
 
 class AssessmentResource extends Resource
 {
@@ -44,30 +45,7 @@ class AssessmentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Select::make('clinic_id')
-                    ->relationship(name: 'clinic',
-                        titleAttribute: 'name',
-                        modifyQueryUsing: fn(Builder $query) => $query->where('organization_id', auth()->user()->organization_id))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->required(),
-                Select::make('assessor_id')
-                    ->label('Assessment made by')
-                    ->relationship(name: 'assessor', titleAttribute: 'name', modifyQueryUsing: fn(Builder $query) => $query->where('organization_id', auth()->user()->organization_id))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->required(),
-                DatePicker::make('date')
-                    ->maxDate(now())
-                    ->placeholder('Please select assessment date')
-                    ->displayFormat('d-M-Y')
-                    ->icon('heroicon-o-calendar')
-                    ->native(false),
-                Section::make('Responses')->schema([Tabs::make('Responses')->tabs(AssessmentService::schema())]),
-                    ])->columns(2);
+            ->schema(FormFields::assessmentFormFields())->columns(2);
     }
 
     public static function table(Table $table): Table

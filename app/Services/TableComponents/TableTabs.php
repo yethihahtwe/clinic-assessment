@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class TableTabs
 {
-    public static function questionTabs(): array
+    public static function domainTabs(): array
     {
         $domains = \App\Models\Domain::select('id', 'name')->get();
         $tabs = [];

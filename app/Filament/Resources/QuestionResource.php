@@ -39,8 +39,8 @@ class QuestionResource extends Resource
                     ->relationship(
                         name: 'domain',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn(Builder $query) => $query->orderBy('id'),
-                        )
+                        modifyQueryUsing: fn (Builder $query) => $query->orderBy('id'),
+                    )
                     ->label(__('Parent Domain'))
                     ->placeholder('Please select domain')
                     ->searchable()
@@ -68,7 +68,7 @@ class QuestionResource extends Resource
                     ->native(false)
                     ->default(null)
                     ->columnSpan(2),
-                TextInput::make('number')->label(__('Question Number'))->helperText('Please enter the question number from the assessment form')->required()->numeric()->step(1)->columnSpan(1)->visible(fn(string $context): bool => $context === 'create'),
+                TextInput::make('number')->label(__('Question Number'))->helperText('Please enter the question number from the assessment form')->required()->numeric()->step(1)->columnSpan(1)->visible(fn (string $context): bool => $context === 'create'),
                 TextArea::make('name')->label(__('Question'))->required()->maxLength(255)->columnSpanFull(),
             ])
             ->columns(5);
@@ -78,18 +78,15 @@ class QuestionResource extends Resource
     {
         return $table
             ->columns(TableColumns::questionColumns())
-            // ->filters([SelectFilter::make('domain')->relationship('domain', 'name')->searchable()->preload()->native(false)])
             ->actions([Tables\Actions\ViewAction::make(), Tables\Actions\EditAction::make()])
-            ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getPages(): array
@@ -103,13 +100,10 @@ class QuestionResource extends Resource
 
     public static function canCreate(): bool
     {
-        if (Auth::user()->email === 'admin@ehssg.org')
-        {
-	        return true;
-        }
-        else
-        {
-	        return false;
+        if (Auth::user()->email === 'admin@ehssg.org') {
+            return true;
+        } else {
+            return false;
         }
     }
 }

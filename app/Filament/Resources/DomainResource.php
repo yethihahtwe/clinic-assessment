@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\TableComponents\TableColumns;
 use App\Filament\Resources\DomainResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\DomainResource\RelationManagers;
@@ -38,9 +39,8 @@ class DomainResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                TextColumn::make('name')->label('Domain')->searchable()->sortable(),
-            ])
+            ->columns(TableColumns::domainColumns())
+            ->recordUrl(null)
             ->filters([
                 //
             ])

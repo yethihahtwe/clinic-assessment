@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SubdomainResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\SubdomainResource\RelationManagers;
+use App\Services\TableComponents\TableColumns;
 
 class SubdomainResource extends Resource
 {
@@ -50,15 +51,8 @@ class SubdomainResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                TextColumn::make('id')->label('No.'),
-                TextColumn::make('name')
-	                ->label('Subdomain')
-	                ->searchable()->sortable(),
-                TextColumn::make('domain_id')
-	                ->label('Domain')
-	                ->searchable()->sortable(),
-            ])
+            ->columns(TableColumns::subdomainColumns())
+            ->recordUrl(null)
             ->filters([
                 //
             ])
