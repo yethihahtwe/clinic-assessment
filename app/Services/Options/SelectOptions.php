@@ -4,7 +4,7 @@ namespace App\Services\Options;
 
 class SelectOptions
 {
-    public static array $contraceptives = [
+    public static array $d7q3 = [
         'coc' => 'COC',
         'pop' => 'POP',
         'depo' => 'Depo',
@@ -19,14 +19,14 @@ class SelectOptions
         'natural_family_planning' => 'Natural Family Planning',
     ];
 
-    public static array $ancTimings = [
+    public static array $d7q5 = [
         '1st_lt14' => '1st Visit - <14 wk',
         '2nd_15-28' => '2nd Visit - 15 to 28 wk',
         '3rd_29-34' => '3rd Visit - 29 to 34 wk',
         '4th_gtequal35' => '4th Visit - >= 35 wk',
     ];
 
-    public static array $abdExams = [
+    public static array $d7q6 = [
         'uterine_size' => 'သားအိမ်အရွယ်အစားကိုကြည့်၍ ကိုယ်ဝန်သက်တမ်းကိုသတ်မှတ်ပါ',
         'fetus_count' => 'သန္ဓေသား အရေအတွက်ကို စမ်းသပ်ပါ',
         'sfheight' => 'symphysis-fundus အမြင့်ကိုတိုင်းတာပါ',
@@ -36,7 +36,7 @@ class SelectOptions
         'fetal_movement' => 'သန္ဓေသားလှုပ်ရှားမှုများကိုစစ်ဆေးပါ',
     ];
 
-    public static array $aphCauses = [
+    public static array $d7q7 = [
         'abruptio_placenta' => 'အချင်းစောကွာခြင်း',
         'placenta_previa' => 'အချင်းရှေ့ရောက်ခြင်း',
         'uterine_rupture' => 'သားအိမ်ကွဲခြင်း',
@@ -44,7 +44,7 @@ class SelectOptions
         'cervical_trauma' => 'သားအိမ်ခေါင်းဒဏ်ရာရခြင်း',
     ];
 
-    public static array $thirdStageSteps = [
+    public static array $d7q8 = [
         'uterine_stimulant' => 'သားအိမ်လှုံ့ဆော်သောဆေးပေးခြင်း',
         'cord_clamp' => '၁ မိနစ်မှ ၃ မိနစ်အတွင်း ချက်ကြိုးအား clamp လုပ်ခြင်း',
         'cct' => 'သားအိမ်ကိုလက်တဖက်ဖြင့် ပင့်တင်၍ ချက်ကြိုးကို ထိန်း၍ အချင်း ဆွဲထုတ်ခြင်း  (Controlled cord traction)',
@@ -53,37 +53,37 @@ class SelectOptions
         'one_hour_monitor' => 'အကယ်၍ အချင်းမကွာပါက အချင်းကွာမချင်း ၁ နာရီအထိ စောင့်ကြည့်ခြင်း',
     ];
 
-    public static array $pphCauses = [
+    public static array $d7q10 = [
         'uterine_atony' => 'သားအိမ်ပြန်မကျုံ့နိုင်ခြင်း (Uterine atony)',
         'trauma' => 'သားအိမ်ဒဏ်ရာရခြင်း (Trauma/ intra-abdominal injury)',
         'retained_placenta' => 'အချင်းကျန်ခြင်း သို့မဟုတ် အချင်းမူမမှန်ဖြစ်ခြင်း (Retained placenta or placental abnormalities)',
         'coagulopathy' => 'Coagulopathy',
     ];
 
-    public static array $pncTimings = [
+    public static array $d7q11 = [
         'within_24hr' => 'ပထမအကြိမ် >> မွေးဖွားပြီး ၂၄ နာရီအတွင်း (အိမ်တွင် သို့မဟုတ် ဆေးခန်းတွင်)',
         '2-7days' => 'ဒုတိယအကြိမ် >> မွေးဖွားပြီး ၂ - ၇ ရက် အတွင်း',
         '8-42days' => 'တတိယအကြိမ် >> မွေးဖွားပြီး ၈ - ၄၂ ရက် အတွင်း',
     ];
 
-    public static array $u5mrCauses = [
+    public static array $d8q2 = [
         'neonatal_mortality' => 'မွေးကင်းစကလေးသေဆုံးမှုဖြစ်စေသော အကြောင်းရင်း ၃ ခုမှာ sepsis and pneumonia, prematurity, birth asphyxia တို့ဖြစ်ပါသည်',
         'u5_mortality' => '၅ နှစ်အောက်ကလေးသေဆုံးမှုဖြစ်စေသော အကြောင်းရင်း ၂ ခုမှာ pneumonia, diarrhoea ဖြစ်ပါသည်',
     ];
 
-    public static array $bf24hr = [
+    public static array $d8q33 = [
         '8t' => '8 times (or) 3 hourly',
         '2t' => '2 times (or) 12 hourly',
         '6t' => '6 times (or) 4 hourly',
     ];
 
-    public static array $exclusiveBf = [
+    public static array $d8q34 = [
         '3m' => 'Full 3 months',
         '6m' => 'Full 6 months',
         '9m' => 'Full 9 months',
     ];
 
-    public static array $supplementaryNutrition = [
+    public static array $d8q35 = [
         'water' => 'Can give water',
         'food' => 'Can give food',
         'nil' => 'No food even water should be given to infants before 6 months of age except breast feeding (Can give ORS or medication if necessary)',

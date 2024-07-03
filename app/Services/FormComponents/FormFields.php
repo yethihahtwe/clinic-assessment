@@ -5,6 +5,7 @@ namespace App\Services\FormComponents;
 use Filament\Forms\Get;
 use Illuminate\Support\Str;
 use App\Services\AssessmentService;
+use App\Services\Options\SelectOptions;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Radio;
@@ -15,6 +16,7 @@ use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\CheckboxList;
 
 class FormFields
 {
@@ -55,10 +57,11 @@ class FormFields
                 ->tabs([
                     Tab::make(static::getDomainName(1))->schema(static::getDomainOneComponents())->columns(2),
                     Tab::make(static::getDomainName(2))->schema(static::getDomainTwoComponents())->columns(2),
-                    Tab::make(static::getDomainName(3))->schema(static::getDomainWithSubdomainBooleanOnly(3))->columns(2),
-                    Tab::make(static::getDomainName(4))->schema(static::getDomainWithSubdomainBooleanOnly(4))->columns(2),
-                    Tab::make(static::getDomainName(5))->schema(static::getDomainWithSubdomainBooleanOnly(5))->columns(2),
-                    Tab::make(static::getDomainName(6))->schema(static::getDomainWithSubdomainBooleanOnly(6))->columns(2),
+                    Tab::make(static::getDomainName(3))->schema(static::getDomainWithSubdomain(3))->columns(2),
+                    Tab::make(static::getDomainName(4))->schema(static::getDomainWithSubdomain(4))->columns(2),
+                    Tab::make(static::getDomainName(5))->schema(static::getDomainWithSubdomain(5))->columns(2),
+                    Tab::make(static::getDomainName(6))->schema(static::getDomainWithSubdomain(6))->columns(2),
+                    Tab::make(static::getDomainName(7))->schema(static::getDomainWithSubdomain(7))->columns(2),
                 ])
                 ->columnSpanFull()
             // Section::make('Responses')->schema([Tabs::make()->tabs(AssessmentService::schema())]),
@@ -110,7 +113,7 @@ class FormFields
         return $subdomainComponents;
     }
 
-    protected static function getDomainWithSubdomainBooleanOnly($domainId): array
+    protected static function getDomainWithSubdomain($domainId): array
     {
         $subdomains = \App\Models\Subdomain::where('domain_id', $domainId)->get();
         $subdomainComponents = [];
@@ -124,7 +127,15 @@ class FormFields
             foreach ($questions as $question) {
                 $questionLabel = $question->name;
                 $questionSlug = $question->slug;
-                $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i. '. '. $questionLabel)->boolean()->inline()->inlineLabel(false)->columnSpan(1);
+                $isMultiselect = $question->is_multiselect;
+                if($isMultiselect){
+                    $questionComponents [] = CheckboxList::make('choices.'. $questionSlug)
+                    ->label($i. '. '. $questionLabel)
+                    ->options(SelectOptions::${$questionSlug})
+                    ->columns(2);
+                } else {
+                    $questionComponents[] = Radio::make('choices.'. $questionSlug)->label($i. '. '. $questionLabel)->boolean()->inline()->inlineLabel(false)->columnSpan(1);
+                }
                 $i++;
             }
             $subdomainComponents [] = Fieldset::make($subdomainLabel)->schema($questionComponents);

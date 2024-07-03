@@ -17,6 +17,7 @@ class Question extends Model
         'domain_id',
         'subdomain_id',
         'slug',
+        'is_multiselect',
     ];
     public function domain(): BelongsTo {
         return $this->belongsTo(Domain::class);
@@ -24,4 +25,8 @@ class Question extends Model
     public function subdomain(): BelongsTo {
         return $this->belongsTo(Subdomain::class);
     }
+
+    protected $casts = [
+        'is_multiselect' => 'boolean',
+    ];
 }
