@@ -89,6 +89,38 @@ class FormFields
 
     protected static function getDomainTwoComponents(): array
     {
+        // return [
+        //     Fieldset::make('man-power')
+        //         ->label('Man Power')
+        //         ->schema([
+        //             Radio::make('choices.d2q1')
+        //                 ->label('1. Doctors')
+        //                 ->boolean()
+        //                 ->inline()
+        //                 ->inlineLabel(false)
+        //                 ->live()
+        //                 ->afterStateUpdated(function (Set $set) {
+        //                     $set('choices.d2q1-m', 0);
+        //                     $set('choices.d2q1-f', 0);
+        //                     $set('choices.d2q1-o', 0);
+        //                 })
+        //                 ->columnSpan(1),
+        //             Fieldset::make('d2q1-count')
+        //                 ->label('Doctors count')
+        //                 ->schema([
+        //                     TextInput::make('choices.d2q1-m')
+
+        //                 ->disabled(fn (Get $get) => $get('choices.d2q1') != 1)
+        //                         ->label('Male')
+        //                         ->placeholder('Count')
+        //                         ->numeric()
+        //                         ->default(0)
+        //                         ->minValue(0)
+        //                         ->suffix('people'),
+        //                 ])->columnSpan(1)->columns(3),
+
+        //         ]),
+        // ];
         $subdomains = \App\Models\Subdomain::where('domain_id', 2)->get();
         $subdomainComponents = [];
         foreach ($subdomains as $subdomain) {
@@ -120,7 +152,7 @@ class FormFields
                         self::hrCountInput('f', $questionSlug),
                         self::hrCountInput('o', $questionSlug),
                     ])->columnSpan(1)->columns(3)
-                    ->visible(fn (Get $get) => $get('choices.' . $questionSlug) == 1);
+                    ->disabled(fn (Get $get) => $get('choices.' . $questionSlug) != 1);
                 $i++;
             }
             $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents);
