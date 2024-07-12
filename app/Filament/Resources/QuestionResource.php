@@ -9,6 +9,7 @@ use Filament\Forms\Set;
 use App\Models\Question;
 use Filament\Forms\Form;
 use App\Models\Subdomain;
+use App\Services\AppIcons;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
@@ -18,18 +19,18 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\TableComponents\TableColumns;
 use App\Filament\Resources\QuestionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\QuestionResource\RelationManagers;
-use App\Services\TableComponents\TableColumns;
 
 class QuestionResource extends Resource
 {
     protected static ?string $model = Question::class;
 
     protected static ?string $navigationGroup = 'Tools';
-    protected static ?int $navigationSort = 3;
-    protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationIcon = AppIcons::QUESTION_ICON;
 
     public static function form(Form $form): Form
     {

@@ -16,14 +16,17 @@ class Question extends Model
         'name',
         'domain_id',
         'subdomain_id',
-        'slug',
-        'is_multiselect',
+        'response_type_id',
     ];
     public function domain(): BelongsTo {
         return $this->belongsTo(Domain::class);
     }
     public function subdomain(): BelongsTo {
         return $this->belongsTo(Subdomain::class);
+    }
+
+    public function responseType(): BelongsTo {
+        return $this->belongsTo(ResponseType::class);
     }
 
     protected $casts = [

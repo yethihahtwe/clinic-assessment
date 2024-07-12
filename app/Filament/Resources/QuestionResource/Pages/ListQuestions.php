@@ -15,6 +15,10 @@ class ListQuestions extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\ImportAction::make()
+                ->importer(\App\Filament\Imports\QuestionImporter::class)
+                ->label('Import CSV')
+                ->icon(\App\Services\AppIcons::IMPORT_ICON),
         ];
     }
 

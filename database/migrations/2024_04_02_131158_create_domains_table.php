@@ -18,38 +18,38 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('domains')->insert([
-            [
-                'name' => 'Infrastructure',
-            ],
-            [
-                'name' => 'Human Resources',
-            ],
-            [
-                'name' => 'General Examination',
-            ],
-            [
-                'name' => 'Infection prevention and control',
-            ],
-            [
-                'name' => 'AIDS, TB, Malaria',
-            ],
-            [
-                'name' => 'Medical Emergency Management',
-            ],
-            [
-                'name' => 'Maternal and Reproductive Health',
-            ],
-            [
-                'name' => 'Child Health',
-            ],
-            [
-                'name' => 'RDQA1: Data collection and reporting tool',
-            ],
-            [
-                'name' => 'RDQA2: Pharmacy supervision checklist',
-            ],
-        ]);
+        // DB::table('domains')->insert([
+        //     [
+        //         'name' => 'Infrastructure',
+        //     ],
+        //     [
+        //         'name' => 'Human Resources',
+        //     ],
+        //     [
+        //         'name' => 'General Examination',
+        //     ],
+        //     [
+        //         'name' => 'Infection prevention and control',
+        //     ],
+        //     [
+        //         'name' => 'AIDS, TB, Malaria',
+        //     ],
+        //     [
+        //         'name' => 'Medical Emergency Management',
+        //     ],
+        //     [
+        //         'name' => 'Maternal and Reproductive Health',
+        //     ],
+        //     [
+        //         'name' => 'Child Health',
+        //     ],
+        //     [
+        //         'name' => 'RDQA1: Data collection and reporting tool',
+        //     ],
+        //     [
+        //         'name' => 'RDQA2: Pharmacy supervision checklist',
+        //     ],
+        // ]);
     }
 
     /**

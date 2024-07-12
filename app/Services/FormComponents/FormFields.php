@@ -57,16 +57,16 @@ class FormFields
                 ->columns(3),
             Tabs::make('Responses')
                 ->tabs([
-                    Tab::make(static::getDomainName(1))->schema(static::getDomainWithoutSubdomainComponents(1))->columns(2),
-                    Tab::make(static::getDomainName(2))->schema(static::getDomainTwoComponents())->columns(2),
-                    Tab::make(static::getDomainName(3))->schema(static::getDomainWithSubdomain(3))->columns(2),
-                    Tab::make(static::getDomainName(4))->schema(static::getDomainWithSubdomain(4))->columns(2),
-                    Tab::make(static::getDomainName(5))->schema(static::getDomainWithSubdomain(5))->columns(2),
-                    Tab::make(static::getDomainName(6))->schema(static::getDomainWithSubdomain(6))->columns(2),
-                    Tab::make(static::getDomainName(7))->schema(static::getDomainWithSubdomain(7))->columns(2),
-                    Tab::make(static::getDomainName(8))->schema(static::getDomainWithSubdomain(8))->columns(2),
-                    Tab::make(static::getDomainName(9))->schema(static::getDomainWithoutSubdomainComponents(9))->columns(2),
-                    Tab::make(static::getDomainName(10))->schema(static::getDomainWithSubdomain(10))->columns(2),
+                    Tab::make(self::getDomainName(1))->schema(static::getDomainWithoutSubdomainComponents(1))->columns(2),
+                    Tab::make(self::getDomainName(2))->schema(static::getDomainTwoComponents())->columns(2),
+                    Tab::make(self::getDomainName(3))->schema(static::getDomainWithSubdomain(3))->columns(2),
+                    Tab::make(self::getDomainName(4))->schema(static::getDomainWithSubdomain(4))->columns(2),
+                    Tab::make(self::getDomainName(5))->schema(static::getDomainWithSubdomain(5))->columns(2),
+                    Tab::make(self::getDomainName(6))->schema(static::getDomainWithSubdomain(6))->columns(2),
+                    Tab::make(self::getDomainName(7))->schema(static::getDomainWithSubdomain(7))->columns(2),
+                    Tab::make(self::getDomainName(8))->schema(static::getDomainWithSubdomain(8))->columns(2),
+                    Tab::make(self::getDomainName(9))->schema(static::getDomainWithoutSubdomainComponents(9))->columns(2),
+                    Tab::make(self::getDomainName(10))->schema(static::getDomainWithSubdomain(10))->columns(2),
                 ])
                 ->columnSpanFull()
             // Section::make('Responses')->schema([Tabs::make()->tabs(AssessmentService::schema())]),
@@ -79,8 +79,14 @@ class FormFields
         $questionComponents = [];
         $i = 1;
         foreach ($questions as $question) {
+            $questionId = $question->id;
             $questionLabel = $question->name;
-            $questionSlug = $question->slug;
+            $responseType = $question->response_type_id;
+            if ($responseType == 1) {
+                $questionComponents[] = TextInput::make('choices.' . $questionId . 'text_response');
+            } else if ($responseType == 2) {
+                $questionComponents[] = Radio::make('choices.' . $questionId)->label($i . '. '. $questionLabel)->boolean()->inline()->inlineLabel(false);
+            }
             $questionComponents[] = Radio::make('choices.' . $questionSlug)->label($i . '. ' . $questionLabel)->boolean()->inline()->inlineLabel(false);
             $i++;
         }
