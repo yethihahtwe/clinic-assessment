@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Domain;
 use App\Models\Subdomain;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -27,6 +28,14 @@ class Question extends Model
 
     public function responseType(): BelongsTo {
         return $this->belongsTo(ResponseType::class);
+    }
+
+    public function possibleResponses(): HasMany {
+        return $this->hasMany(PossibleResponses::class);
+    }
+
+    public function textResponses(): HasMany {
+        return $this->hasMany(TextResponse::class);
     }
 
     protected $casts = [

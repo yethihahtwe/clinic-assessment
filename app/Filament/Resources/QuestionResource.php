@@ -86,7 +86,8 @@ class QuestionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\PossibleResponsesRelationManager::class,
+            RelationManagers\TextResponsesRelationManager::class,
         ];
     }
 

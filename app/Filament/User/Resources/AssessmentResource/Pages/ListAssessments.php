@@ -3,6 +3,7 @@
 namespace App\Filament\User\Resources\AssessmentResource\Pages;
 
 use App\Filament\User\Resources\AssessmentResource;
+use App\Services\AppIcons;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -13,7 +14,8 @@ class ListAssessments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->icon(AppIcons::ADD_ICON),
         ];
     }
 }

@@ -51,4 +51,17 @@ class TableColumns
             TextColumn::make('name')->label('Response Type')->searchable()->sortable(),
         ];
     }
+
+    public static function possibleResponseColumns(): array
+    {
+        return [
+            self::rowNumberColumn(),
+            TextColumn::make('question.name')->label('Question')->searchable()->sortable(),
+            TextColumn::make('response')->label('Response')->searchable()->sortable(),
+            TextColumn::make('score')->label('Score'),
+        ];
+    }
 }
+// 'question_id',
+// 'response',
+// 'score',

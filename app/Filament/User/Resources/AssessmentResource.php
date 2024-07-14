@@ -23,16 +23,15 @@ use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Actions;
 use App\Services\AssessmentInfolistService;
+use App\Services\FormComponents\FormFields;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\ViewEntry;
-use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Components\Tabs as InfolistTabs;
 use App\Filament\User\Resources\AssessmentResource\Pages;
 use Filament\Infolists\Components\Section as InfolistSection;
 use App\Filament\User\Resources\AssessmentResource\RelationManagers;
-use App\Services\FormComponents\FormFields;
+use Illuminate\Contracts\Support\Htmlable;
 
 class AssessmentResource extends Resource
 {
@@ -51,11 +50,17 @@ class AssessmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-	        ->query(Assessment::query()->where('organization_id', auth()->user()->organization_id))
+            ->query(Assessment::query()->where('organization_id', auth()->user()->organization_id))
             ->columns([
-                TextColumn::make('clinic.name')->label('Clinic')->searchable()->sortable(),
-                TextColumn::make('assessor.name')->label('Assessment by')->searchable()->sortable(),
-                TextColumn::make('date')->date('d-M-Y')->sortable(),
+                \Filament\Tables\Columns\Layout\Stack::make([
+                    TextColumn::make('clinic.name')->label('Clinic')->searchable()->sortable(),
+                    TextColumn::make('assessor.name')->label('Assessment by')->searchable()->sortable(),
+                    TextColumn::make('date')->date('d-M-Y')->sortable(),
+                ])
+            ])
+            ->contentGrid([
+                'md' => 3,
+                'xl' => 5,
             ])
             ->filters([
                 //
@@ -68,38 +73,42 @@ class AssessmentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->recordUrl(null);
     }
 
 
 
-    public static function infolist(Infolist $infolist):Infolist {
+    public static function infolist(Infolist $infolist): Infolist
+    {
         return $infolist
             ->schema([
                 InfolistSection::make()
                     ->schema([
+                        \Filament\Infolists\Components\Group::make([
+                            TextEntry::make('clinic.name')->label('Clinic')->badge(),
+                            TextEntry::make('assessor.name')->label('Assessment made by')->badge(),
+                            TextEntry::make('date')->date('d-M-Y')->badge(),
+                        ])
+                            ->columns(3)->columnSpan(1),
                         Actions::make([
                             Action::make('export')
-                                ->url(function (Assessment $record): string
-                                {
+                                ->url(function (Assessment $record): string {
                                     return route('assessments.export', ['id' => $record->id]);
                                 })
                                 ->label('Download Excel')
                                 ->icon('heroicon-o-arrow-down-tray'),
                         ]),
-                        TextEntry::make('clinic.name')->label('Clinic'),
-                        TextEntry::make('assessor.name')->label('Assessment made by'),
-                        TextEntry::make('date')->date('d-M-Y'),
-                        InfolistTabs::make('responses')->tabs(AssessmentInfolistService::schema())->contained(false),
-                    ])
+                        InfolistTabs::make('responses')->tabs(AssessmentInfolistService::schema())->contained(false)->columnSpanFull(),
+                    ])->columns(2),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getPages(): array

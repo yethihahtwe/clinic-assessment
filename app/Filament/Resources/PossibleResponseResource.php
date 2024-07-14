@@ -6,6 +6,7 @@ use App\Filament\Resources\PossibleResponseResource\Pages;
 use App\Filament\Resources\PossibleResponseResource\RelationManagers;
 use App\Models\PossibleResponses;
 use App\Services\AppIcons;
+use App\Services\TableComponents\TableColumns;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -35,9 +36,7 @@ class PossibleResponseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                //
-            ])
+            ->columns(TableColumns::possibleResponseColumns())
             ->filters([
                 //
             ])

@@ -56,177 +56,147 @@ class FormFields
                 ])
                 ->columns(3),
             Tabs::make('Responses')
-                ->tabs([
-                    Tab::make(self::getDomainName(1))->schema(static::getDomainWithoutSubdomainComponents(1))->columns(2),
-                    Tab::make(self::getDomainName(2))->schema(static::getDomainTwoComponents())->columns(2),
-                    Tab::make(self::getDomainName(3))->schema(static::getDomainWithSubdomain(3))->columns(2),
-                    Tab::make(self::getDomainName(4))->schema(static::getDomainWithSubdomain(4))->columns(2),
-                    Tab::make(self::getDomainName(5))->schema(static::getDomainWithSubdomain(5))->columns(2),
-                    Tab::make(self::getDomainName(6))->schema(static::getDomainWithSubdomain(6))->columns(2),
-                    Tab::make(self::getDomainName(7))->schema(static::getDomainWithSubdomain(7))->columns(2),
-                    Tab::make(self::getDomainName(8))->schema(static::getDomainWithSubdomain(8))->columns(2),
-                    Tab::make(self::getDomainName(9))->schema(static::getDomainWithoutSubdomainComponents(9))->columns(2),
-                    Tab::make(self::getDomainName(10))->schema(static::getDomainWithSubdomain(10))->columns(2),
-                ])
+                ->tabs(
+                    self::getDomainComponents()
+                )
                 ->columnSpanFull()
-            // Section::make('Responses')->schema([Tabs::make()->tabs(AssessmentService::schema())]),
         ];
     }
 
-    protected static function getDomainWithoutSubdomainComponents($domainId): array
+    /*
+    If a domain has subdomains, questions need to wrap with subdomains.
+    If not questions will follow a domain.
+    If no subdomains, question query filtered by domain_id.
+    If has subdomains, question query filtered by subdomain_id.
+     */
+    protected static function getQuestionComponents($idType, $id): array
     {
-        $questions = \App\Models\Question::where('domain_id', $domainId)->get();
+        // query questions based on domain or subdomain
+        if ($idType === 'domain') {
+            $questions = \App\Models\Question::where('domain_id', $id)->get();
+        } else if ($idType === 'subdomain') {
+            $questions = \App\Models\Question::where('subdomain_id', $id)->get();
+        }
+
         $questionComponents = [];
         $i = 1;
         foreach ($questions as $question) {
             $questionId = $question->id;
             $questionLabel = $question->name;
             $responseType = $question->response_type_id;
-            if ($responseType == 1) {
-                $questionComponents[] = TextInput::make('choices.' . $questionId . 'text_response');
-            } else if ($responseType == 2) {
-                $questionComponents[] = Radio::make('choices.' . $questionId)->label($i . '. '. $questionLabel)->boolean()->inline()->inlineLabel(false);
-            }
-            $questionComponents[] = Radio::make('choices.' . $questionSlug)->label($i . '. ' . $questionLabel)->boolean()->inline()->inlineLabel(false);
-            $i++;
-        }
-        return $questionComponents;
-    }
-
-    protected static function getDomainTwoComponents(): array
-    {
-        // return [
-        //     Fieldset::make('man-power')
-        //         ->label('Man Power')
-        //         ->schema([
-        //             Radio::make('choices.d2q1')
-        //                 ->label('1. Doctors')
-        //                 ->boolean()
-        //                 ->inline()
-        //                 ->inlineLabel(false)
-        //                 ->live()
-        //                 ->afterStateUpdated(function (Set $set) {
-        //                     $set('choices.d2q1-m', 0);
-        //                     $set('choices.d2q1-f', 0);
-        //                     $set('choices.d2q1-o', 0);
-        //                 })
-        //                 ->columnSpan(1),
-        //             Fieldset::make('d2q1-count')
-        //                 ->label('Doctors count')
-        //                 ->schema([
-        //                     TextInput::make('choices.d2q1-m')
-
-        //                 ->disabled(fn (Get $get) => $get('choices.d2q1') != 1)
-        //                         ->label('Male')
-        //                         ->placeholder('Count')
-        //                         ->numeric()
-        //                         ->default(0)
-        //                         ->minValue(0)
-        //                         ->suffix('people'),
-        //                 ])->columnSpan(1)->columns(3),
-
-        //         ]),
-        // ];
-        $subdomains = \App\Models\Subdomain::where('domain_id', 2)->get();
-        $subdomainComponents = [];
-        foreach ($subdomains as $subdomain) {
-            $subdomainId = $subdomain->id;
-            $subdomainLabel = $subdomain->name;
-
-            $questions = \App\Models\Question::where('subdomain_id', $subdomainId)->get();
-            $questionComponents = [];
-            $i = 1;
-            foreach ($questions as $question) {
-                $questionLabel = $question->name;
-                $questionSlug = $question->slug;
-                $questionComponents[] = Radio::make('choices.' . $questionSlug)
-                ->label($i . '. ' . $questionLabel)
-                ->boolean()
-                ->inline()
-                ->inlineLabel(false)
-                ->live()
-                ->afterStateUpdated(function(Set $set) use ($questionSlug){
-                    $set('choices.' . $questionSlug . '-m', 0);
-                    $set('choices.'. $questionSlug. '-f', 0);
-                    $set('choices.'. $questionSlug. '-o', 0);
-                })
-                ->columnSpan(1);
-                $questionComponents[] = Fieldset::make($questionSlug . '-count')
-                    ->label($questionLabel . ' count')
-                    ->schema([
-                        self::hrCountInput('m', $questionSlug),
-                        self::hrCountInput('f', $questionSlug),
-                        self::hrCountInput('o', $questionSlug),
-                    ])->columnSpan(1)->columns(3)
-                    ->disabled(fn (Get $get) => $get('choices.' . $questionSlug) != 1);
-                $i++;
-            }
-            $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents);
-        }
-        return $subdomainComponents;
-    }
-
-    protected static function getDomainWithSubdomain($domainId): array
-    {
-        $subdomains = \App\Models\Subdomain::where('domain_id', $domainId)->get();
-        $subdomainComponents = [];
-        foreach ($subdomains as $subdomain) {
-            $subdomainId = $subdomain->id;
-            $subdomainLabel = $subdomain->name;
-
-            $questions = \App\Models\Question::where('subdomain_id', $subdomainId)->get();
-            $questionComponents = [];
-            $i = 1;
-            foreach ($questions as $question) {
-                $questionLabel = $question->name;
-                $questionSlug = $question->slug;
-                $isMultiselect = $question->is_multiselect;
-                if ($isMultiselect) {
-                    $questionComponents[] = CheckboxList::make('choices.' . $questionSlug)
+            $possibleResponses = \App\Models\PossibleResponses::where('question_id', $questionId)->get();
+            if ($responseType == 1) { // accepting only text input
+                $textResponses = \App\Models\TextResponse::where('question_id', $questionId)->get();
+                if ($textResponses->count() > 0) {
+                    foreach ($textResponses as $textResponse) {
+                        $questionComponents[] = TextInput::make('choices.' . $questionId)
+                            ->label($i . '. ' . $textResponse->response_label)
+                            ->placeholder('Enter response');
+                        $i++;
+                    }
+                }
+            } else if ($responseType == 2) { // accepting only single select
+                if ($possibleResponses->count() > 0) {
+                    $questionComponents[] = Radio::make('choices.' . $questionId)
                         ->label($i . '. ' . $questionLabel)
-                        ->options(SelectOptions::${$questionSlug})
+                        ->options($possibleResponses->pluck('response', 'response'))
+                        ->inline()
+                        ->inlineLabel(false);
+                    $i++;
+                }
+            } else if ($responseType == 3) { // accepting multiple select
+                if ($possibleResponses->count() > 0) {
+                    $questionComponents[] = CheckboxList::make('choices.' . $questionId)
+                        ->label($i . '. ' . $questionLabel . ' (တစ်ခုထက်ပို၍ဖြေဆိုနိုင်ပါသည်)')
+                        ->options($possibleResponses->pluck('response', 'response'))
                         ->columns(2);
-                } else {
-                    if (!in_array($questionSlug, ['d8q33', 'd8q34', 'd8q35'])) {
-                        $questionComponents[] =
-                            Radio::make('choices.' . $questionSlug)
-                            ->label($i . '. ' . $questionLabel)
-                            ->boolean()
-                            ->inline()
-                            ->inlineLabel(false)
-                            ->columnSpan(1);
-                    } else {
-                        $questionComponents[] =
-                            Radio::make('choices.' . $questionSlug)
-                            ->label($i . '. ' . $questionLabel)
-                            ->options(SelectOptions::${$questionSlug})
-                            ->inline()
-                            ->inlineLabel(false)
+                    $i++;
+                }
+            } else if ($responseType == 4) { // accepting single select and single text input
+                $textResponse = \App\Models\TextResponse::where('question_id', $questionId)->first();
+                if (!empty($textResponse)) {
+                    $questionComponents[] = Radio::make('choices.' . $questionId)
+                        ->label($i . '. ' . $questionLabel)
+                        ->boolean()
+                        ->inline()
+                        ->inlineLabel(false)
+                        ->live();
+                    $questionComponents[] = TextInput::make('choices.' . $questionId . '.' . $textResponse->response_label)
+                        ->label($textResponse->response_label)
+                        ->disabled(fn (Get $get): bool => $get('choices.' . $questionId) != 1)
+                        ->dehydrated(fn (Get $get): bool => $get('choices.' . $questionId) == 1);
+                }
+                $i++;
+            } else if ($responseType == 5) { // accepting single select and multiple text input
+                if ($possibleResponses->count() > 0) {
+                    $questionComponents[] = Radio::make('choices.' . $questionId)
+                        ->label($i . '. ' . $questionLabel)
+                        ->options($possibleResponses->pluck('response', 'score'))
+                        ->inline()
+                        ->inlineLabel(false)
+                        ->live()
+                        ->afterStateUpdated(function(Set $set, Get $get) use ($questionId): void {
+                            $keys = collect($get('choices'))->keys()->filter(fn ($key) => Str::startsWith($key, $questionId. '_'));
+                            foreach ($keys as $key) {
+                                $set('choices.' . $key, 0);
+                            }
+                        });
+                    $textResponses = \App\Models\TextResponse::where('question_id', $questionId)->get();
+                    if ($textResponses->count() > 0) {
+                        $textComponents = [];
+                        foreach ($textResponses as $textResponse) {
+                            $textComponents[] = TextInput::make('choices.' . $questionId . '_' . $textResponse->response_label)
+                                ->label($textResponse->response_label)
+                                ->numeric($textResponse->is_numeric)
+                                ->required()
+                                ->default(0)
+                                ->minValue(0)
+                                ->disabled(fn (Get $get): bool => $get('choices.' . $questionId) != 1)
+                                ->dehydrated(true)
+                                // ->dehydrated(fn (Get $get): bool => $get('choices.' . $questionId) == 1)
+                                ;
+                        }
+                        $questionComponents[] = Group::make($textComponents)
+                            ->columns(3)
                             ->columnSpan(1);
                     }
                 }
                 $i++;
             }
-            $subdomainComponents[] = Fieldset::make($subdomainLabel)->schema($questionComponents);
         }
-        return $subdomainComponents;
+        return $questionComponents;
     }
 
-
-    protected static function getDomainName(int $domainId): string
+    protected static function getDomainComponents(): array
     {
-        return \App\Models\Domain::find($domainId)->name;
+        $domains = \App\Models\Domain::all();
+        $domainComponents = [];
+        foreach ($domains as $domain) {
+            $domainId = $domain->id;
+            $domainName = $domain->name;
+            $domainComponents[] = Tab::make($domainName)
+                ->schema(self::getSubdomainComponents($domainId))
+                ->columns(2);
+        }
+        return $domainComponents;
     }
 
-    protected static function hrCountInput($g, $questionSlug,): TextInput
+    protected static function getSubdomainComponents($domainId): array
     {
-        $label = $g == 'm' ? 'Male' : ($g == 'f' ? 'Female' : 'Other');
-        return TextInput::make('choices.' . $questionSlug . '-' . $g)
-            ->label($label)
-            ->placeholder('Count')
-            ->numeric()
-            ->default(0)
-            ->minValue(0)
-            ->suffix('people');
+        $subdomains = \App\Models\Subdomain::where('domain_id', $domainId)->get();
+        $hasSubdomain = $subdomains->count() > 0;
+        if ($hasSubdomain) {
+            $subdomainComponents = [];
+            foreach ($subdomains as $subdomain) {
+                $subdomainId = $subdomain->id;
+                $subdomainName = $subdomain->name;
+                $subdomainComponents[] = Section::make($subdomainName)
+                    ->label($subdomainName)
+                    ->schema(self::getQuestionComponents('subdomain', $subdomainId))
+                    ->columns(2);
+            }
+            return $subdomainComponents;
+        }
+        return self::getQuestionComponents('domain', $domainId);
     }
 }

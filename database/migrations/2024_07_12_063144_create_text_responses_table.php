@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
             $table->text('response_label');
+            $table->boolean('is_numeric')->default(false);
             $table->timestamps();
         });
     }

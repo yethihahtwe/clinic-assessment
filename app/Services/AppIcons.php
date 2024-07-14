@@ -9,4 +9,5 @@ class AppIcons
     public const RESPONSE_TYPE_ICON = 'heroicon-o-chat-bubble-left-ellipsis';
     public const POSSIBLE_RESPONSE_ICON = 'heroicon-o-chat-bubble-left-right';
     public const QUESTION_ICON = 'heroicon-o-question-mark-circle';
+    public const TEXT_RESPONSE_ICON = 'heroicon-o-bars-2';
 }

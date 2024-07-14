@@ -14,7 +14,6 @@ class CreateAssessment extends CreateRecord
     {
         $data['user_id'] = auth()->user()->id;
         $data['organization_id'] = auth()->user()->organization_id;
-        dd($data);
         return $data;
     }
 
