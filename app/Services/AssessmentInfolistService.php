@@ -61,33 +61,104 @@ class AssessmentInfoListService
         } else if ($idType === 'subdomain') {
             $questions = \App\Models\Question::where('subdomain_id', $id)->get();
         }
-        $questionComponents = [];
+
+        // get total score
+        $questionComponents[] = \Filament\Infolists\Components\TextEntry::make('totalScore')
+            ->label('Total Score:')
+            ->state(function (\App\Models\Assessment $record) use ($questions) {
+                $totalScore = 0;
+                foreach ($questions as $question) {
+                    $questionId = $question->id;
+                    $responseTypeId = $question->response_type_id;
+                    $state = data_get($record, 'choices.' . $questionId);
+
+                    // single select for total score
+                    if ($responseTypeId == 2) {
+                        $possibleResponseScore = self::getPossibleResponseScore($questionId, $state);
+                    } else if ($responseTypeId == 3) { // multiselect for total score
+                        if (is_array($state)) {
+                            $possibleResponseScore = 0;
+                            foreach ($state as $item) {
+                                $possibleResponseScore += 1;
+                            }
+                        }
+                    } else if ($responseTypeId == 5) { // single select and multitextinput for total score
+                        $possibleResponseScore = $state;
+                    }
+                    $totalScore += $possibleResponseScore;
+                }
+                return $totalScore;
+            })
+            ->badge()
+            ->color('info')
+            ->columnSpanFull();
+
         $i = 1;
-        $totalScore = 0;
         foreach ($questions as $question) {
             $questionId = $question->id;
             $questionLabel = $question->name;
-            $questionComponents[] = \Filament\Infolists\Components\TextEntry::make('choices.' . $questionId)
-                ->label($i . '. ' . $questionLabel)
-                ->default('Not Answered')
-                ->badge()
-                ->hint(function ($state) use ($questionId, &$totalScore) {
-                    $possibleResponseScore = self::getPossibleResponseScore($questionId, $state) ?? 0;
-                    $totalScore += $possibleResponseScore;
-                    return 'Score: ' . $possibleResponseScore . '/total: ' . $totalScore;
-                })
-                ->color(function ($state) use ($questionId) {
-                    $possibleResponseScore = self::getPossibleResponseScore($questionId, $state);
-                    return self::getColorByScore($possibleResponseScore);
-                });
+            $responseTypeId = $question->response_type_id;
+
+            // for single select questions
+            if ($responseTypeId == 2) {
+                $questionComponents[] = \Filament\Infolists\Components\TextEntry::make('choices.' . $questionId)
+                    ->label($i . '. ' . $questionLabel)
+                    ->default('Not Answered')
+                    ->badge()
+                    ->hint(function ($state) use ($questionId) {
+                        $possibleResponseScore = self::getPossibleResponseScore($questionId, $state) ?? 0;
+                        return 'Score: ' . $possibleResponseScore;
+                    })
+                    ->color(function ($state) use ($questionId) {
+                        $possibleResponseScore = self::getPossibleResponseScore($questionId, $state);
+                        return self::getColorByScore($possibleResponseScore);
+                    });
+            } else if ($responseTypeId == 3) { // for multiselect questions
+                $questionComponents[] = \Filament\Infolists\Components\TextEntry::make('choices.' . $questionId)
+                    ->label($i . '. ' . $questionLabel)
+                    ->default('Not Answered')
+                    ->listWithLineBreaks()
+                    ->bulleted()
+                    ->hint(function ($state) {
+                        $score = 0;
+                        if (is_array($state)) {
+                            foreach ($state as $item) {
+                                $score += 1;
+                            }
+                        }
+                        return 'Score: ' . $score;
+                    })
+                    ->color(function ($state): string {
+                        if ($state === 'Not Answered') {
+                            return 'gray';
+                        }
+                        return 'success';
+                    });
+            } else if ($responseTypeId == 5) { // for single select and multiple text input questions
+                $questionComponents[] = \Filament\Infolists\Components\TextEntry::make('choices.' . $questionId)
+                    ->label($i . '. ' . $questionLabel)
+                    ->default('Not Answered')
+                    ->badge()
+                    ->hint(function ($state) {
+                        return 'Score: ' . $state;
+                    })
+                    ->formatStateUsing(fn (\App\Models\Assessment $record, $state): string => match ($state) {
+                        '1' => 'Yes, Male: ' . $record->choices[$questionId . '_Male'] . ', Female: ' . $record->choices[$questionId . '_Female'] . ', Other: ' . $record->choices[$questionId . '_Other'],
+                        '0' => 'No',
+                        default => 'Not Answered',
+                    })
+                    ->color(
+                        fn ($state): string => match ($state) {
+                            '1' => 'success',
+                            '0' => 'warning',
+                            default => 'gray',
+                        }
+                    );
+            }
             $i++;
         }
 
-        $questionComponents[] = \Filament\Infolists\Components\TextEntry::make('totalScore')
-            ->label('Total Score')
-            ->state($totalScore)
-            ->badge()
-            ->color('primary');
+
 
         return $questionComponents;
     }
