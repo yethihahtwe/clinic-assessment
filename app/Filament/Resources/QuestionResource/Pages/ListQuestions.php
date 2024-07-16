@@ -18,7 +18,8 @@ class ListQuestions extends ListRecords
             Actions\ImportAction::make()
                 ->importer(\App\Filament\Imports\QuestionImporter::class)
                 ->label('Import CSV')
-                ->icon(\App\Services\AppIcons::IMPORT_ICON),
+                ->icon(\App\Services\AppIcons::IMPORT_ICON)
+                ->visible(fn(): bool => auth()->user()->is_admin),
         ];
     }
 
