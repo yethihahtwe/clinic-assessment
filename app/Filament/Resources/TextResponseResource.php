@@ -2,16 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TextResponseResource\Pages;
-use App\Filament\Resources\TextResponseResource\RelationManagers;
-use App\Models\TextResponse;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Services\AppIcons;
 use Filament\Tables\Table;
+use App\Models\TextResponse;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TextResponseResource\Pages;
+use App\Filament\Resources\TextResponseResource\RelationManagers;
 
 class TextResponseResource extends Resource
 {
@@ -80,5 +86,17 @@ class TextResponseResource extends Resource
             'create' => Pages\CreateTextResponse::route('/create'),
             'edit' => Pages\EditTextResponse::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (Auth::user()->email === 'admin@ehssg.org')
+        {
+	        return true;
+        }
+        else
+        {
+	        return false;
+        }
     }
 }

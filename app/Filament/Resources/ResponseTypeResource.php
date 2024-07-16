@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\ResponseType;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use App\Services\TableComponents\TableColumns;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ResponseTypeResource\Pages;
 use App\Filament\Resources\ResponseTypeResource\RelationManagers;
-use App\Models\ResponseType;
-use App\Services\TableComponents\TableColumns;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ResponseTypeResource extends Resource
 {
@@ -63,5 +64,17 @@ class ResponseTypeResource extends Resource
             'create' => Pages\CreateResponseType::route('/create'),
             'edit' => Pages\EditResponseType::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (Auth::user()->email === 'admin@ehssg.org')
+        {
+	        return true;
+        }
+        else
+        {
+	        return false;
+        }
     }
 }

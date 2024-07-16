@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use App\Services\AppIcons;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\PossibleResponses;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use App\Services\TableComponents\TableColumns;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PossibleResponseResource\Pages;
 use App\Filament\Resources\PossibleResponseResource\RelationManagers;
-use App\Models\PossibleResponses;
-use App\Services\AppIcons;
-use App\Services\TableComponents\TableColumns;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PossibleResponseResource extends Resource
 {
@@ -64,5 +65,17 @@ class PossibleResponseResource extends Resource
             'create' => Pages\CreatePossibleResponse::route('/create'),
             'edit' => Pages\EditPossibleResponse::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (Auth::user()->email === 'admin@ehssg.org')
+        {
+	        return true;
+        }
+        else
+        {
+	        return false;
+        }
     }
 }

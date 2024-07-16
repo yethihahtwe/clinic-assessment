@@ -19,7 +19,7 @@ class ListQuestions extends ListRecords
                 ->importer(\App\Filament\Imports\QuestionImporter::class)
                 ->label('Import CSV')
                 ->icon(\App\Services\AppIcons::IMPORT_ICON)
-                ->visible(fn(): bool => auth()->user()->is_admin),
+                ->visible(fn(): bool => auth()->user()->email === 'admin@ehssg.org'),
         ];
     }
 
