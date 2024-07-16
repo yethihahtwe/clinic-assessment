@@ -16,6 +16,7 @@ class AssessmentController extends Controller
 		$clinic = $assessment->clinic->name;
 		$date = $assessment->date;
         $assessor = $assessment->assessor->name;
-		return Excel::download(new ScoresExport([$choices], $clinic, $date, $assessor), $clinic . '_' . $date . '_scores.xlsx');
+        $organization = $assessment->organization->name;
+		return Excel::download(new ScoresExport([$choices], $clinic, $date, $assessor, $organization), $clinic . '_' . $date . '_scores.xlsx');
 	}
 }

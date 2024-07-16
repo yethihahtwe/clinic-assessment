@@ -140,7 +140,12 @@ class AssessmentInfoListService
                     ->default('Not Answered')
                     ->badge()
                     ->hint(function ($state) {
-                        return 'Score: ' . $state;
+                        $score = match ($state){
+                          '1' => 1,
+                          '0' => 0,
+                          'Not Answered' => 0,
+                        };
+                        return 'Score: ' . $score;
                     })
                     ->formatStateUsing(fn (\App\Models\Assessment $record, $state): string => match ($state) {
                         '1' => 'Yes, Male: ' . $record->choices[$questionId . '_Male'] . ', Female: ' . $record->choices[$questionId . '_Female'] . ', Other: ' . $record->choices[$questionId . '_Other'],
