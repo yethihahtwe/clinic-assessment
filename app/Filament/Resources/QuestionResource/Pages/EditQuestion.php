@@ -16,10 +16,10 @@ class EditQuestion extends EditRecord
         return Auth::user()->email === 'admin@ehssg.org' ? [Actions\DeleteAction::make(),] : [];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array {
-        $data['slug'] = 'd' . $data['domain_id'] . 'q' . $data['number'];
-        return $data;
-    }
+    // protected function mutateFormDataBeforeSave(array $data): array {
+    //     $data['slug'] = 'd' . $data['domain_id'] . 'q' . $data['number'];
+    //     return $data;
+    // }
 
     protected function getRedirectUrl(): string {
         return $this->getResource()::getUrl('index');

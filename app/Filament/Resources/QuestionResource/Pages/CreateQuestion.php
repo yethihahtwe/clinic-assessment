@@ -10,10 +10,10 @@ class CreateQuestion extends CreateRecord
 {
     protected static string $resource = QuestionResource::class;
 
-    protected function mutateFormDataBeforeCreate(array $data): array {
-        $data['slug'] = 'd' . $data['domain_id'] . 'q' . $data['number'];
-        return $data;
-    }
+    // protected function mutateFormDataBeforeCreate(array $data): array {
+    //     $data['slug'] = 'd' . $data['domain_id'] . 'q' . $data['number'];
+    //     return $data;
+    // }
 
     protected function getRedirectUrl(): string {
         return $this->getResource()::getUrl('index');
