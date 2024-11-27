@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
+use App\Services\AssessmentInfolistService;
 
 class ScoresExport implements FromArray, WithHeadings, WithStrictNullComparison
 {
@@ -32,22 +33,58 @@ class ScoresExport implements FromArray, WithHeadings, WithStrictNullComparison
     public function array(): array
     {
         $data = [];
+        $totalScore = 0;
+        $totalMaxScore = 0;
 
-        $domains = Domain::with('subdomains.questions', 'questions')->get();
+        $domains = Domain::with(['subdomains.questions', 'questions'])->get();
 
         foreach ($domains as $domain) {
+            $domainScore = 0;
+            $domainMaxScore = 0;
+            $domainQuestions = collect();
+
             if ($domain->subdomains->isNotEmpty()) {
                 foreach ($domain->subdomains as $subdomain) {
                     foreach ($subdomain->questions as $question) {
-                        $data[] = $this->processQuestion($domain->name, $subdomain->name, $question);
+                        $domainQuestions->push($question);
+                        $result = $this->processQuestion($domain->name, $subdomain->name, $question);
+                        $data[] = $result;
+                        $domainScore += $result['score'];
                     }
                 }
             } else {
                 foreach ($domain->questions as $question) {
-                    $data[] = $this->processQuestion($domain->name, '', $question);
+                    $domainQuestions->push($question);
+                    $result = $this->processQuestion($domain->name, '', $question);
+                    $data[] = $result;
+                    $domainScore += $result['score'];
                 }
             }
+
+            $domainMaxScore = AssessmentInfolistService::calculateMaximumScore($domainQuestions);
+            $domainScorePercentage = AssessmentInfolistService::calculateScorePercentage($domainScore, $domainMaxScore);
+
+            $data[] = [
+                'domain' => $domain->name,
+                'subdomain' => 'Total',
+                'question' => '',
+                'response' => '',
+                'score' => "$domainScore/$domainMaxScore ($domainScorePercentage)"
+            ];
+
+            $totalScore += $domainScore;
+            $totalMaxScore += $domainMaxScore;
         }
+
+        $totalScorePercentage = AssessmentInfolistService::calculateScorePercentage($totalScore, $totalMaxScore);
+        $data[] = [
+            'domain' => 'Overall Total',
+            'subdomain' => '',
+            'question' => '',
+            'response' => '',
+            'score' => "$totalScore/$totalMaxScore ($totalScorePercentage)"
+        ];
+
         return $data;
     }
 
@@ -57,27 +94,29 @@ class ScoresExport implements FromArray, WithHeadings, WithStrictNullComparison
         $score = 0;
 
         switch ($question->response_type_id) {
-            case 2:
-                $score = $this->getScore($question->id, $value) ?? 0;
+            case 2: // RESPONSE_TYPE_SINGLE_SELECT
+                $score = AssessmentInfolistService::getPossibleResponseScore($question->id, $value) ?? 0;
                 break;
-            case 3:
+            case 3: // RESPONSE_TYPE_MULTI_SELECT
                 if (is_array($value)) {
                     $score = count($value);
                     $value = implode(', ', $value);
                 }
                 break;
-            case 5:
+            case 5: // RESPONSE_TYPE_SINGLE_SELECT_WITH_TEXT
                 $boolValue = $this->choices[0][$question->id] ?? 0;
-                $value = match($boolValue){
-                    '1' => 'Yes, Male: '. $this->choices[0][$question->id . '_Male'] .', Female: ' . $this->choices[0][$question->id . '_Female'] . ', Other: ' . $this->choices[0][$question->id . '_Other'],
-                    '0' => 'No',
-                    default => 'Not Answered'
-                };
-                $score = $boolValue;
+                $value = AssessmentInfolistService::formatSingleSelectWithText(new Assessment(['choices' => $this->choices[0]]), $boolValue, $question->id);
+                $score = $boolValue ? 1 : 0;
                 break;
         }
 
-        return compact('domainName', 'subdomainName') + ['question' => $question->name] +  compact('value', 'score');
+        return [
+            'domain' => $domainName,
+            'subdomain' => $subdomainName,
+            'question' => $question->name,
+            'response' => $value,
+            'score' => $score,
+        ];
     }
 
     public function headings(): array
@@ -92,109 +131,5 @@ class ScoresExport implements FromArray, WithHeadings, WithStrictNullComparison
         $headings[] = ['Domain', 'Subdomain', 'Question', 'Response', 'Score'];
 
         return $headings;
-    }
-
-    public function getBody(): array
-    {
-        $body = [];
-        $choices = $this->choices;
-
-        $domains = self::getDomains();
-
-        foreach ($domains as $domain) {
-            $domainId = $domain->id;
-            $domainName = $domain->name;
-
-            $subdomains = self::getSubdomains($domainId);
-            $hasSubdomains = $subdomains->count() > 0;
-
-            if ($hasSubdomains) {
-                foreach ($subdomains as $subdomain) {
-                    $subdomainId = $subdomain->id;
-                    $subdomainName = $subdomain->name;
-                    $questions = self::getQuestions('subdomain', $subdomainId);
-                }
-            } else {
-                $questions = self::getQuestions('domain', $domainId);
-            }
-
-            foreach ($questions as $question) {
-                $questionId = $question->id;
-                $questionName = $question->name;
-
-                $responseType = $question->response_type_id;
-
-                if ($responseType == 2) {
-                    $response = $choices[0][$questionId] ?? 'Not Answered';
-                    $score = self::getScore($questionId, $response) ?? 0;
-                } else if ($responseType == 3) {
-                    $response =  $choices[0][$questionId];
-                    $score = 0;
-                    if (is_array($response)) {
-                        foreach ($response as $item) {
-                            $score += 1;
-                        }
-                    }
-                }
-
-                $body[] = self::constructArray(
-                    $domainName,
-                    $subdomainName ?? '',
-                    $questionName,
-                    $response,
-                    $score,
-                );
-            }
-        }
-        dd($body);
-        return $body;
-    }
-
-    protected static function getDomains()
-    {
-        $domains = Domain::all();
-        return $domains;
-    }
-
-    protected static function getSubdomains($domainId)
-    {
-        $subdomains = Subdomain::where('domain_id', $domainId)->get();
-        return $subdomains;
-    }
-
-    protected static function getQuestions($idType, $id)
-    {
-        if ($idType === 'domain') {
-            $questions = Question::where(['domain_id' => $id])->get();
-        } elseif ($idType === 'subdomain') {
-            $questions = Question::where(['subdomain_id' => $id])->get();
-        }
-        return $questions;
-    }
-
-    protected static function getScore($questionId, $response)
-    {
-        $score = PossibleResponses::where([
-            'question_id' => $questionId,
-            'response' => $response
-        ])->value('score') ?? 0;
-        return $score;
-    }
-
-    protected static function constructArray(
-        $domainName,
-        $subdomainName,
-        $questionName,
-        $response,
-        $score
-    ) {
-        $constructedArray = [
-            'domain' => $domainName,
-            'subdomain' => $subdomainName,
-            'question' => $questionName,
-            'response' => $response,
-            'score' => $score,
-        ];
-        return $constructedArray;
     }
 }
