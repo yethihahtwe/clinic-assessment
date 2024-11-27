@@ -55,6 +55,14 @@ class UserPanelProvider extends PanelProvider
             ->widgets([
             ])
             ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, VerifyCsrfToken::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class])
-            ->authMiddleware([Authenticate::class]);
+            ->authMiddleware([Authenticate::class])
+            ->renderHook(
+                'panels::simple-page.start',
+                fn() => view('partials.login-logo')
+            )
+            ->renderHook(
+                'panels::sidebar.footer',
+                fn() => view('partials.sidebar-footer')
+            );
     }
 }

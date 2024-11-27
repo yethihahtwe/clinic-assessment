@@ -56,7 +56,11 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([])
             ->databaseNotifications()
             ->databaseNotificationsPolling('5s')
-            ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, VerifyCsrfToken::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class, VerifyIsAdmin::class]);
+            ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, VerifyCsrfToken::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class, VerifyIsAdmin::class])
+            ->renderHook(
+                'panels::simple-page.start',
+                fn()=>view('partials.login-logo')
+            );
         // ->authMiddleware([
         //     Authenticate::class,
         // ]);
